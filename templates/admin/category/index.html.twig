@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+    <h1>Gestion catégories</h1>
+
+    <a href="{{ path('app_admin_category_edit') }}"
+       class="btn btn-outline-primary mb-3">
+        Ajouter une catégorie
+    </a>
+
+    <table class="table table-striped">
+        <tr class="table-dark">
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Description</th>
+        </tr>
+        {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
