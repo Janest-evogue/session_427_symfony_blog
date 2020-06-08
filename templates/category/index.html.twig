@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ category.name }} - {{ parent() }}{% endblock %}
+
+{% block body %}
+    <h1>{{ category.name }}</h1>
+
+    {% if category.description is not empty %}
+        <p>{{ category.description }}</p>
+    {% endif %}
+{% endblock %}

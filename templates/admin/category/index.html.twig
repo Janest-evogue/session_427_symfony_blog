@@ -13,13 +13,52 @@
             <th>Id</th>
             <th>Nom</th>
             <th>Description</th>
+            <th width="250px"></th>
         </tr>
         {% for category in categories %}
             <tr>
                 <td>{{ category.id }}</td>
                 <td>{{ category.name }}</td>
                 <td>{{ category.description }}</td>
+                <td>
+                    <a href="{{ path('app_admin_category_edit', {'id': category.id}) }}"
+                       class="btn btn-primary">
+                        Modifier
+                    </a>
+                    <a href="{{ path('app_admin_category_delete', {'id': category.id}) }}"
+                       class="btn btn-danger btn-delete">
+                        Supprimer
+                    </a>
+                </td>
             </tr>
         {% endfor %}
     </table>
+
+    <div class="modal fade" id="modal_delete" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p>Etes-vous sûr de vouloir supprimer cette catégorie ?</p>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-confirm-delete">Oui</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}
+
+{% block javascripts %}
+    {# pour garder le contenu du bloc javascripts de base.html.twig #}
+    {{ parent() }}
+
+    {# asset() pour créer le chemin vers la racine web du site qui correspond à celle du répertoire public #}
+    <script src="{{ asset('js/admin_category.js') }}"></script>
+{% endblock %}
+
+
+

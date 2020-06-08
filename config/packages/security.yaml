@@ -1,14 +1,36 @@
 security:
+    # comment le mot de passe est encrypté pour l'entité User
+    encoders:
+        App\Entity\User:
+            # défini par le framework
+            algorithm: auto
+
     # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
     providers:
-        users_in_memory: { memory: null }
+        # les utilisateurs viennent de l'entité User
+        # et l'identifiant est l'email
+        database:
+            entity:
+                class: App\Entity\User
+                property: email
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             anonymous: lazy
-            provider: users_in_memory
+            # le fournisseur d'utilisateur défini dans providers
+            provider: database
+
+            # route de la page qui contient le formulaire de connexion
+            form_login:
+                login_path: app_user_login
+                check_path: app_user_login
+
+            # route de la page de déconnexion
+            logout:
+                path: app_user_logout
+
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#firewalls-authentication
