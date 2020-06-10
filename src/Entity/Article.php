@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ArticleRepository::class)
@@ -19,11 +20,13 @@ class Article
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Assert\NotBlank(message="Le titre est obligatoire")
      */
     private $title;
 
     /**
      * @ORM\Column(type="text")
+     * @Assert\NotBlank(message="Le contenu est obligatoire")
      */
     private $content;
 
@@ -41,6 +44,8 @@ class Article
      * @ORM\JoinColumn(nullable=false)
      *
      * Cet attribut contient un objet Category (et non juste un id de category)
+     *
+     * @Assert\NotBlank(message="La catégorie est obligatoire")
      */
     private $category;
 
@@ -49,6 +54,16 @@ class Article
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
+
+    /**
+     * @ORM\Column(type="string", length=100, nullable=true)
+     */
+    private $image;
+
+    public function __construct()
+    {
+        $this->setPublicationDate(new \DateTime());
+    }
 
     public function getId(): ?int
     {
@@ -111,6 +126,18 @@ class Article
     public function setAuthor(?User $author): self
     {
         $this->author = $author;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

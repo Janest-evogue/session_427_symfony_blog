@@ -6,6 +6,7 @@ use App\Entity\Article;
 use App\Entity\Category;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -45,7 +46,16 @@ class ArticleType extends AbstractType
                     'placeholder' => 'Choisissez une catégorie'
                 ]
             )
-
+            ->add(
+                'image',
+                // input type file
+                FileType::class,
+                [
+                    'label' => 'Illustration',
+                    // champ optionnel
+                    'required' => false
+                ]
+            )
             // ces 2 champs ne sont pas dans le formulaire,
             // les valeurs seront définies dans le contrôleur
 //            ->add('publicationDate')
