@@ -1,0 +1,10 @@
+<div class="list-group list-group-flush">
+    {% for article in articles %}
+        <a href="{{ path('app_article_index', {'id': article.id}) }}"
+           class="list-group-item">
+            {{ article.title }}
+        </a>
+    {% else %}
+        <p>Aucun article pour le moment.</p>
+    {% endfor %}
+</div>
