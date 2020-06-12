@@ -6,12 +6,14 @@ namespace App\Controller\Admin;
 
 use App\Entity\Article;
 use App\Form\ArticleType;
+use App\Form\SearchArticleType;
 use App\Repository\ArticleRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -22,15 +24,26 @@ class ArticleController extends AbstractController
     /**
      * @Route("/")
      */
-    public function index(ArticleRepository $repository)
+    public function index(ArticleRepository $repository, Request $request)
     {
+        $searchForm = $this->createForm(SearchArticleType::class);
+
+        $searchForm->handleRequest($request);
+
+        dump($searchForm->getData());
+
         // tous les articles triés par date de publication décroissante
-        $articles = $repository->findBy([], ['publicationDate' => 'DESC']);
+        //$articles = $repository->findBy([], ['publicationDate' => 'DESC']);
+
+        // (array) pour forcer le typage et passer un tableau vide
+        // au lieu de null quand il n'y a pas de recherche
+        $articles = $repository->search((array)$searchForm->getData());
 
         return $this->render(
             'admin/article/index.html.twig',
             [
-                'articles' => $articles
+                'articles' => $articles,
+                'search_form' => $searchForm->createView()
             ]
         );
     }
@@ -149,5 +162,13 @@ class ArticleController extends AbstractController
         $this->addFlash('success', "L'article est supprimé");
 
         return $this->redirectToRoute('app_admin_article_index');
+    }
+
+    /**
+     * @Route("/ajax-content/{id}")
+     */
+    public function ajaxContent(Article $article)
+    {
+        return new Response(nl2br($article->getContent()));
     }
 }

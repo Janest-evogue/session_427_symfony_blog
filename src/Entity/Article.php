@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -60,9 +62,18 @@ class Article
      */
     private $image;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article")
+     * tri par défaut quand on utilise le getter pour récupérer les commentaires de l'article
+     * en lazy loading
+     * @ORM\OrderBy({"publicationDate": "DESC"})
+     */
+    private $comments;
+
     public function __construct()
     {
         $this->setPublicationDate(new \DateTime());
+        $this->comments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -138,6 +149,37 @@ class Article
     public function setImage($image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getArticle() === $this) {
+                $comment->setArticle(null);
+            }
+        }
 
         return $this;
     }

@@ -19,32 +19,54 @@ class ArticleRepository extends ServiceEntityRepository
         parent::__construct($registry, Article::class);
     }
 
-    // /**
-    //  * @return Article[] Returns an array of Article objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function search(array $filters = [])
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        // constructeur de requête SQL
+        // "a" est l'alias de l'entité Article
+        $builder = $this->createQueryBuilder('a');
 
-    /*
-    public function findOneBySomeField($value): ?Article
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        // tri par date de publication décroissante
+        $builder->orderBy('a.publicationDate', 'DESC');
+
+        if (!empty($filters['title'])) {
+            $builder
+                // ajoute un élément à la clause WHERE
+                ->andWhere('a.title LIKE :title')
+                // bindValue du marqueur :title
+                ->setParameter('title', '%' . $filters['title'] . '%')
+            ;
+        }
+
+        if (!empty($filters['category'])) {
+            $builder
+                // on utilise l'attribut $category de l'entité Article
+                // et non le nom du champ category_id de la table en bdd
+                ->andWhere('a.category = :category')
+                ->setParameter('category', $filters['category'])
+            ;
+        }
+
+        if (!empty($filters['start_date'])) {
+            $builder
+                ->andWhere('a.publicationDate >= :start_date')
+                ->setParameter('start_date', $filters['start_date'])
+            ;
+        }
+
+        if (!empty($filters['end_date'])) {
+            $builder
+                ->andWhere('a.publicationDate <= :end_date')
+                ->setParameter('end_date', $filters['end_date'])
+            ;
+        }
+
+        // objet Query généré
+        $query = $builder->getQuery();
+
+        // si l'on veut afficher le SQL pour du debug :
+        //echo $query->getSQL();
+
+        // retourne un tableau d'objets Article correspondant à la requête
+        return $query->getResult();
     }
-    */
 }
